@@ -1,21 +1,31 @@
-import os
+# -*- coding: utf-8 -*-
+"""Function to perform the version check for the pre-commit hook"""
 import json
+import os
 import sys
 
-this_path = os.path.split(os.path.realpath(__file__))[0]
 
-# Get current JSON content
-setup_path = os.path.join(this_path, os.pardir, os.pardir, 'setup.json')
-with open(setup_path) as f:
-	setup_content = json.load(f)
+def main():
+    """Run the version check for the pre-commit hook"""
+    import aiida_quantumespresso
 
-# Retrieve version from python package
-sys.path.insert(0, os.path.join(this_path, os.pardir, os.pardir))
-import aiida_quantumespresso
-version = aiida_quantumespresso.__version__
+    this_path = os.path.split(os.path.realpath(__file__))[0]
 
-setup_content['version'] = version
+    # Get current JSON content
+    setup_path = os.path.join(this_path, os.pardir, os.pardir, 'setup.json')
+    with open(setup_path) as handle:
+        setup_content = json.load(handle)
 
-# Rewrite JSON in a 'consistent' way (sorted, indented)
-with open(setup_path, 'w') as f:
-	json.dump(setup_content, f, indent=4, sort_keys=True)
+    # Retrieve version from python package
+    sys.path.insert(0, os.path.join(this_path, os.pardir, os.pardir))
+    version = aiida_quantumespresso.__version__
+
+    setup_content['version'] = version
+
+    # Rewrite JSON in a 'consistent' way (sorted, indented)
+    with open(setup_path, 'w') as handle:
+        json.dump(setup_content, handle, indent=4, sort_keys=True)
+
+
+if __name__ == "__main__":
+    main()

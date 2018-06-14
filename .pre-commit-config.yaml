@@ -1,3 +1,4 @@
+repos:
 - repo: local
   hooks: 
   - id: version-number
@@ -7,3 +8,12 @@
     files: '^(setup.json)'
     pass_filenames: false
 
+- repo: git://github.com/guykisel/prospector-mirror
+  sha: b27f281eb9398fc8504415d7fbdabf119ea8c5e1
+  hooks:
+  - id: prospector
+    language: system
+    files: >-
+      (?x)^(
+        .travis-data/precommit/fix_setup_version.py|
+      )$
