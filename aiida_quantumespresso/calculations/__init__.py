@@ -318,7 +318,7 @@ class BasePwCpInputGenerator(object):
                             vel[0], vel[1], vel[2]
                         )
                     )
-            # I append to atomic_positions_card  so that velocities 
+            # I append to atomic_positions_card  so that velocities
             # are defined right after positions:
             atomic_positions_card = atomic_positions_card + "".join(atomic_velocities_strings)
             # Freeing the memory
@@ -444,13 +444,13 @@ class BasePwCpInputGenerator(object):
         inputfile = ""
         for namelist_name in namelists_toprint:
             inputfile += "&{0}\n".format(namelist_name)
-            # namelist content; set to {} if not present, so that we leave an 
+            # namelist content; set to {} if not present, so that we leave an
             # empty namelist
             namelist = input_params.pop(namelist_name, {})
             for k, v in sorted(namelist.iteritems()):
                 inputfile += get_input_data_text(k, v, mapping=mapping_species)
             inputfile += "/\n"
-    
+
         # Write cards now
         inputfile += atomic_species_card
         inputfile += atomic_positions_card
@@ -459,8 +459,8 @@ class BasePwCpInputGenerator(object):
         inputfile += cell_parameters_card
         #TODO: write CONSTRAINTS
         #TODO: write OCCUPATIONS
-            
-        if input_params:            
+
+        if input_params:
             raise InputValidationError(
                 "The following namelists are specified in input_params, but are "
                 "not valid namelists for the current type of calculation: "
@@ -637,7 +637,7 @@ class BasePwCpInputGenerator(object):
                 settings_dict['CMDLINE'] = ['-environ']
             # To create a mapping from the species to an incremental fortran 1-based index
             # we use the alphabetical order as in the inputdata generation
-            mapping_species = {sp_name: (idx+1) for idx, sp_name in 
+            mapping_species = {sp_name: (idx+1) for idx, sp_name in
                                enumerate(sorted([kind.name for kind in structure.kinds]))}
             environ_input_filename = tempfolder.get_abs_path(
                 self._ENVIRON_INPUT_FILE_NAME)
@@ -796,10 +796,10 @@ class BasePwCpInputGenerator(object):
 
     def _get_reference_structure(self):
         """
-        Used to get the reference structure to obtain which 
-        pseudopotentials to use from a given family using 
-        use_pseudos_from_family. 
-        
+        Used to get the reference structure to obtain which
+        pseudopotentials to use from a given family using
+        use_pseudos_from_family.
+
         :note: this method can be redefined in a given subclass
                to specify which is the reference structure to consider.
         """
@@ -872,8 +872,11 @@ class BasePwCpInputGenerator(object):
             # add the restart flag
             old_inp_dict['CONTROL']['restart_mode'] = 'restart'
             inp_dict = ParameterData(dict=old_inp_dict)
-
-        remote_folders = self.get_outputs(node_type=RemoteData)
+        # Maintain compatibility with aiida_core 0.12.0 and older versions
+        try:
+            remote_folders = self.get_outputs(type=RemoteData)
+        except TypeError:
+            remote_folders = self.get_outputs(node_type=RemoteData)
         if len(remote_folders) != 1:
             raise InputValidationError("More than one output RemoteData found "
                                        "in calculation {}".format(self.pk))
